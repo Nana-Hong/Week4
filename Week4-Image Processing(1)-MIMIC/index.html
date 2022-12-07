@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <h1 style="color:red;font-size:30px;background-color:white">Week4: Image Processing (1)</h1>
+   
+  <p></p>
+  <script>window.onerror = function(error, url, line) {parent.postMessage(["console", "❌ -- [ERROR] -- ❌ -- ⚠️ " + error], "*")};var cl = console.log;console.log = function () {var msg = [...arguments].join();parent.postMessage(["console", msg], "*");  }  </script><script crossorigin src="jsfeat-min.js">
+</script>
+
+
+  <style>
+        body {
+            background-color: pink;
+            cursor: none;
+        }
+        
+        #box {
+            width: 10px;
+            height: 10px;
+            background-color: rgb(99, 156, 156);
+            position: absolute;
+        }
+</style>
+  
+  </head>
+<body>
+   <h2>I:</h2>
+
+  <canvas id="myCanvas" width="220" height="330" style="border:5px solid #f3704b;"></canvas>
+  <img src="imag1.jpeg" id="img">
+  
+
+  
+
+ 
+<div id="box"></div>
+<script language="javascript" type="text/javascript">
+
+   function getMouse(mousePosition) {
+     mouseX = mousePosition.layerX;
+     mouseY = mousePosition.layerY;
+        }     
+ 
+  //var x = document.getElementById("pixel").value;  
+  var eleImge = document.getElementById('img'); 
+  var canvas = document.getElementById('myCanvas');
+  canvas.addEventListener('mousemove', getMouse, false);
+
+
+  var fnCannyEdge = function (source, canvas, options) {
+    document.onmousemove = function(e) {
+            var x2 = e.pageX;
+            var y2 = e.pageY;
+    
+    options = options || {};
+
+    var blur_radius = options.blur_radius || 3 ;
+    var low_threshold = options.low_threshold || 20;
+    var high_threshold = options.high_threshold || x2;
+    var originWidth = source.naturalWidth || source.width;
+    var originHeight = source.naturalHeight || source.height;
+    var width = originWidth, height = originHeight;
+
+    var context = canvas.getContext('2d');
+    context.drawImage(source, 0, 0, width, height);
+    var imageData = context.getImageData(0, 0, width, height);
+    var img_11 = new jsfeat.matrix_t(width, height, jsfeat.U8C1_t);
+    jsfeat.imgproc.grayscale(imageData.data, width, height, img_11);
+    
+    var kernelSize = (blur_radius + 1) * 2;
+    jsfeat.imgproc.gaussian_blur(img_11, img_11, kernelSize, 0);
+    jsfeat.imgproc.canny(img_11, img_11, low_threshold, high_threshold);
+
+
+    var data_11 = new Uint32Array(imageData.data.buffer);
+    var alpha = (0xff << 24);
+    var i1 = img_11.cols * img_11.rows, pix = 0;
+    // for(var i = img_11.cols * img_11.rows, pix = 0;i++) {
+    
+    while(--i1 >= 0) {
+        pix = 255 - img_11.data[i1];
+        data_11[i1] = alpha | (pix << 16) | (pix << 8) | pix;
+    }
+    //  if(--i >=0) { pix = 255 - img_11.data[i];
+        //data_11[i] = alpha | (pix << 16) | (pix << 8) | pix; } }
+        
+    context.putImageData(imageData, 0, 0);
+    }};
+
+
+eleImge.addEventListener('load', function () {
+    fnCannyEdge(this, myCanvas);
+});
+      
+       
+</script>
+
+  <script language="javascript" type="text/javascript">
+          
+            var box = document.getElementById('box')
+            document.onmousemove = function(e) {
+            var x = e.pageX;
+            var y = e.pageY;
+            box.style.left = x - (box.offsetWidth / 2) + 'px'
+            box.style.top = y - (box.offsetHeight / 2) + 'px'
+          }
+</script>
+</body>
+</html>

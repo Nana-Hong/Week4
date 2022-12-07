@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <h1 style="color:red;font-size:30px;background-color:white">Week4: Image Processing(2)</h1>
+   
+  <p></p>
+      <style>
+      body {
+        background-color: pink;
+        margin: 1px;
+        padding: 10px;
+      }
+    </style>
+</head>
+<body>
+  <h2>II:</h2>
+    <canvas id="myCanvas1" width="290" height="270" style="border:5px solid #006c54;"></canvas>
+    <canvas id="myCanvas2" width="290" height="270" style="border:5px solid #006c54;"></canvas>
+<script>window.onerror = function(error, url, line) {parent.postMessage(["console", "❌ -- [ERROR] -- ❌ -- ⚠️ " + error], "*")};var cl = console.log;console.log = function () {var msg = [...arguments].join();parent.postMessage(["console", msg], "*");  }  </script><script language="javascript" type="text/javascript">
+              
+        var mouseX = 1;
+        var mouseY = 1;
+        var imageObj = new Image();
+        imageObj.src = "imag2.jpg";
+
+        var canvas = document.getElementById('myCanvas1');
+        var canvas2 = document.getElementById('myCanvas2');
+        canvas.addEventListener('mousemove', getMouse, false);
+
+        var context = canvas.getContext('2d');
+        var context2 = canvas2.getContext('2d');
+        var imageWidth = imageObj.width;
+        var imageHeight = imageObj.height;
+        
+        context2.drawImage(imageObj, 0, 0);
+
+        var imageData = context2.getImageData(0, 0, imageWidth, imageHeight);
+  
+        var data = imageData.data;
+  
+        var imageData2 = context.getImageData(0, 0, imageWidth, imageHeight);
+        var imageData3 = context.getImageData(0, 0, imageWidth, imageHeight);
+          function getMouse(mousePosition) {
+                mouseX = mousePosition.layerX;
+                mouseY = mousePosition.layerY;
+        }
+      
+   
+      var draw = function() {
+
+           // iterate over all pixels
+        for(var i = 1; i < imageHeight-1; i++) {
+            
+            // This is the row above
+            var collm1=(i-1)*imageWidth;
+            // This is the row below
+            var collp1=(i+1)*imageWidth;
+            
+          // loop through each row
+          for(var j = 1; j < imageWidth-1; j++) {
+ 
+ // This is the X gradient           
+           imageData2.data[((imageWidth * i) + j) * 4] = (-1*(data[((imageWidth * i) + j-1) * 4])) + (data[((imageWidth * i) + j+1) * 4]);
+         imageData2.data[((imageWidth * i) + j) * 4+1] = (-1*(data[((imageWidth * i) + j-1) * 4+1])) + (data[((imageWidth * i) + j+1) * 4]);
+            imageData2.data[((imageWidth * i) + j) * 4+2] = (-1*(data[((imageWidth * i) + j-1) * 4+2])) + (data[((imageWidth * i) + j+1) * 4]);
+            imageData2.data[((imageWidth * i) + j) * 4+3] = 255;
+            
+// This is the Y gradient
+          if( (data[((imageWidth * i) + j) * 4] > mouseX/1.5) )
+           {
+      imageData3.data[((imageWidth * i) + j) * 4] = (-0.5*(data[((collm1) + j-1) * 4])) + 1.5*(data[((collp1) + j+1) * 4]);
+            imageData3.data[((imageWidth * i) + j) * 4+1] = (-0.5*(data[((collm1) + j-1) * 4+1])) + 1.3*(data[((collp1) + j+1) * 4]);
+            imageData3.data[((imageWidth * i) + j) * 4+2] = (-0.3*(data[((collm1) + j-1) * 4+2])) + 5*(data[((collp1) + j+1) * 4]);
+            imageData3.data[((imageWidth * i) + j) * 4+3] = 255;
+           }
+          else
+           {
+        imageData3.data[((imageWidth * i) + j) * 4] = -0.9*(data[((collm1) + j-1) * 4])+(data[((collp1) + j+1) * 4]);
+            imageData3.data[((imageWidth * i) + j) * 4+1] = -0.8*(data[((collm1) + j-1) * 4+1])+(data[((collp1) + j+1) * 4+1]);
+            imageData3.data[((imageWidth * i) + j) * 4+2] = (-1*(data[((collm1) + j-1) * 4+2])) + (data[((collp1) + j+1) * 4+2]);
+            imageData3.data[((imageWidth * i) + j) * 4+3] = 255;
+             
+           
+           }
+          }
+        }
+        context.putImageData(imageData2,0,0);
+        context.putImageData(imageData3,0,0);
+		requestAnimationFrame(draw);
+      };
+       
+		requestAnimationFrame(draw);
+ 
+          function getMouse(mousePosition) {
+                mouseX = mousePosition.layerX;
+                mouseY = mousePosition.layerY;
+        }     
+
+</script>
+</body>
+</html>
